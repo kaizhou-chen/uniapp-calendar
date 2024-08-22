@@ -1,0 +1,1 @@
+import{d as a,q as s,v as t,x as e,o,c as n,i as d}from"./index-CB-fBPLm.js";const i=a({__name:"today",setup:a=>(s((()=>{setTimeout((async()=>{await t({url:"/pages/index/index"}),e("today")}),200)})),(a,s)=>{const t=d;return o(),n(t)})});export{i as default};
