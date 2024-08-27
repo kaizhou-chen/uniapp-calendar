@@ -121,7 +121,7 @@ function getScheduleList(dayList: any) {
 
   // 当前日期，是否有日程
   const item = activeItem.value
-  if(!item.list || item.list.length <= 0) {
+  if(item && (!item.list || item.list.length <= 0)) {
     scheduleRef.value.hide()
   }
 }
