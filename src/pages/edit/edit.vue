@@ -71,7 +71,12 @@ const doRemove = () => {
     const list = JSON.parse(str)
     const index = list.findIndex((x: any) => x.id == props.id)
     list.splice(index, 1)
-    uni.setStorageSync(key, JSON.stringify(list))
+    
+    if (list.length > 0) {
+      uni.setStorageSync(key, JSON.stringify(list))
+    } else {
+      uni.removeStorageSync(key)
+    }
 
     uni.showToast({icon: 'none', title: '删除成功'})
     uni.navigateBack()

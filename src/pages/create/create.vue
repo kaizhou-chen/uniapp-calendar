@@ -1,5 +1,5 @@
 <template>
-  <view>
+  <view class="wrap">
     <ScheduleForm ref="formRef" type="create" @submit="onSubmit"></ScheduleForm>
   </view>
 </template>
@@ -29,5 +29,9 @@ const onSubmit = (data: any) => {
 page {
   height: 100%;
   background-color: #F5F7FA;
+}
+
+.wrap {
+  height: 100%;
 }
 </style>

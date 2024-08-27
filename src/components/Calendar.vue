@@ -114,8 +114,16 @@ function getScheduleList(dayList: any) {
     const str = uni.getStorageSync(x.date)
     if (str) {
       x.list = JSON.parse(str)
+    } else {
+      x.list = []
     }
   })
+
+  // 当前日期，是否有日程
+  const item = activeItem.value
+  if(!item.list || item.list.length <= 0) {
+    scheduleRef.value.hide()
+  }
 }
 
 // 获取上个月剩余天数
@@ -200,6 +208,7 @@ const gotoPrevMonth = () => {
   }
 
   list.value = getDayList()
+  scheduleRef.value.hide()
 }
 
 const gotoNextMonth = () => {
@@ -211,6 +220,14 @@ const gotoNextMonth = () => {
   }
 
   list.value = getDayList()
+  scheduleRef.value.hide()
+}
+
+const gotoMonth = (year: number, month: number) => {
+  curYear.value = year
+  curMonth.value = month
+  list.value = getDayList()
+  scheduleRef.value.hide()
 }
 
 const refreshList = () => {
@@ -225,13 +242,14 @@ defineExpose({
   showToday,
   gotoPrevMonth,
   gotoNextMonth,
+  gotoMonth,
   refreshList
 })
 </script>
 
 <style lang="scss" scoped>
 .container {
-  height: 100%;
+  height: var(--height);
   display: flex;
   flex-direction: column;
 
@@ -256,10 +274,10 @@ defineExpose({
   .days {
     display: flex;
     flex-wrap: wrap;
-    height: calc(100vh - 50rpx);
+    height: calc(var(--height) - 50rpx);
     .day {
       width: calc(100% / 7);
-      height: calc((100vh - 50rpx) / 5);
+      height: calc((var(--height) - 50rpx) / 5);
       border: 1px solid #D4D7DE;
       box-sizing: border-box;
       position: relative;
