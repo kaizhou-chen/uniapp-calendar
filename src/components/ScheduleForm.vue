@@ -94,6 +94,8 @@ const saveData = () => {
     const index = list.findIndex((item: any) => item.id === editId.value)
     list[index] = data
   }
+
+  list.sort((a: any, b: any) => a.begin.localeCompare(b.begin))
   
   uni.setStorageSync(key, JSON.stringify(list))
 }

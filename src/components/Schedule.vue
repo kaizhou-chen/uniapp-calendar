@@ -6,7 +6,7 @@
         <image src="/static/down.png" class="icon"></image>
       </view>
     </view>
-    <view class="wrap">
+    <scroll-view scroll-y class="wrap">
       <view v-for="item in activeItem.list" :key="item.id" @tap="onEdit(item)">
         <view class="item">
           <view class="time">
@@ -21,7 +21,7 @@
           </view>
         </view>
       </view>
-    </view>
+    </scroll-view>
   </view>
 </template>
 
@@ -68,6 +68,7 @@ defineExpose({
 
 .wrap {
   height: 360rpx;
+  overflow: hidden;
 
   .item {
     display: flex;

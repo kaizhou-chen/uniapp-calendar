@@ -4,7 +4,13 @@
       <view v-for="item in week" :key="item" class="week">{{ item }}</view>
     </view>
     
-    <scroll-view class="days-scroll" scroll-y :scroll-into-view="scrollName">
+    <scroll-view 
+      scroll-y 
+      class="days-scroll" 
+      :scroll-into-view="scrollName" 
+      @touchstart="touchStart" 
+      @touchend="touchEnd"
+    >
       <view class="days">
         <view 
           v-for="(item, index) in list" 
@@ -35,6 +41,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted } from 'vue'
 import { useCalendarStore } from '@/stores/index'
+import { useGestures } from '@/hooks/useGestures'
 
 import dayjs from 'dayjs'
 import Schedule from './Schedule.vue'
@@ -60,6 +67,15 @@ const activeItem = ref()
 
 const scheduleRef = ref()
 const scrollName = ref()
+
+const { touchStart, touchEnd } = useGestures({
+  onScrollLeft: () => {
+    gotoNextMonth()
+  }, 
+  onScrollRight: () => {
+    gotoPrevMonth()
+  }
+})
 
 onMounted(() => {
   showToday()
@@ -129,7 +145,7 @@ function getScheduleList(dayList: any) {
 // 获取上个月剩余天数
 function getPreMonthDays(m: dayjs.Dayjs) {
   const list: any[] = [];
-  const firstDay = m.startOf('month').day() // 获取当月第一天是星期几;星期日为 0，星期六为 6
+  let firstDay: number = m.startOf('month').day() // 获取当月第一天是星期几;星期日为 0，星期六为 6
   if (firstDay == 1) { //表示上个月无剩余天数
     return list;
   }
@@ -148,6 +164,7 @@ function getPreMonthDays(m: dayjs.Dayjs) {
    * 上个月，要显示的天数就为 (firstDay - 1)
    */ 
   const days = dayjs(`${year}-${month}`).daysInMonth(); // 获取上个月的天数
+  firstDay = firstDay == 0 ? 7 : firstDay; // 如果是星期日，则显示为 7
   for (let i = 1; i <= firstDay - 1; i++) {
     const day = days - (firstDay - 1 - i)
     list.push({ year, month, day, date: format(year, month, day), extra: true })
@@ -187,6 +204,8 @@ const format = (year: number, month: number, day: number) => {
 }
 
 const onClickDay = async (e: any, item: any) => {
+  scrollName.value = '';
+
   activeItem.value = item
   setActiveDate(activeItem.value.date)
 
@@ -200,6 +219,11 @@ const onClickDay = async (e: any, item: any) => {
   scrollName.value = 'date_' + item.date;
 }
 
+const hideSchedule = () => {
+  scheduleRef.value.hide()
+  scrollName.value = ''
+}
+
 const gotoPrevMonth = () => {
   curMonth.value = curMonth.value - 1;
   if (curMonth.value < 1) {
@@ -208,7 +232,8 @@ const gotoPrevMonth = () => {
   }
 
   list.value = getDayList()
-  scheduleRef.value.hide()
+  
+  hideSchedule()
 }
 
 const gotoNextMonth = () => {
@@ -220,14 +245,16 @@ const gotoNextMonth = () => {
   }
 
   list.value = getDayList()
-  scheduleRef.value.hide()
+  
+  hideSchedule()
 }
 
 const gotoMonth = (year: number, month: number) => {
   curYear.value = year
   curMonth.value = month
   list.value = getDayList()
-  scheduleRef.value.hide()
+  
+  hideSchedule()
 }
 
 const refreshList = () => {
@@ -276,11 +303,14 @@ defineExpose({
     flex-wrap: wrap;
     height: calc(var(--height) - 50rpx);
     .day {
+      display: flex;
+      flex-direction: column;
       width: calc(100% / 7);
       height: calc((var(--height) - 50rpx) / 5);
       border: 1px solid #D4D7DE;
       box-sizing: border-box;
       position: relative;
+      overflow: hidden;
       &.today {
         background-color: #d9ecff;
       }
@@ -298,6 +328,11 @@ defineExpose({
       &.extra {
         color: #A8ABB2;
       }
+    }
+
+    .schedule-wrap {
+      flex: 1;
+      overflow: hidden;
     }
 
     .schedule {

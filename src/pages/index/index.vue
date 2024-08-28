@@ -2,7 +2,7 @@
   <!-- 自定义导航栏 -->
   <CustomNavbar class="navbar" :year="curYear" :month="curMonth" @select="onSelect"></CustomNavbar>
 
-  <view class="wrap" ref="listComRef" @touchstart="touchStart" @touchend="touchEnd">
+  <view class="wrap" ref="listComRef">
     <Calendar ref="calendarRef" @change="onChange" :style="{ '--height': height }"></Calendar>
   </view>
 </template>
@@ -10,7 +10,6 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import { useGestures } from '@/hooks/useGestures'
 import Calendar from '@/components/Calendar.vue'
 import CustomNavbar from './components/CustomNavbar.vue'
 
@@ -36,15 +35,6 @@ onShow(async () => {
     height.value = (uni.getSystemInfoSync().windowHeight - queryHeight) + 'px'
   })
 })
-
-const onScrollRight = () => {
-  calendarRef.value.gotoPrevMonth()
-}
-const onScrollLeft = () => {
-  calendarRef.value.gotoNextMonth()
-}
-
-const { touchStart, touchEnd } = useGestures({onScrollLeft, onScrollRight})
 
 const onChange = (data: any) => {
   const { year, month } = data;
